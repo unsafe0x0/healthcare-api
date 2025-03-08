@@ -29,3 +29,5 @@ const completeAppointment = async (c) => {
     return c.json({ error: "Internal Server Error" }, 500);
   }
 };
+
+export default completeAppointment;

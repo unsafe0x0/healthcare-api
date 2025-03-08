@@ -1,4 +1,4 @@
-import db from "../../../prisma/db";
+import db from "../../../prisma/db.js";
 import { hashPassword } from "../../../utils/hash-password.js";
 import { uploadImage } from "../../../utils/cloudinary.js";
 
