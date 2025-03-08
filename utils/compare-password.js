@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
 
 export const comparePassword = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword);
+  return await bcryptjs.compare(password, hashedPassword);
 };
