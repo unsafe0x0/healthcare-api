@@ -10,7 +10,6 @@ const getAdmin = async (c) => {
         id: true,
         name: true,
         email: true,
-        phone: true,
       },
     });
 

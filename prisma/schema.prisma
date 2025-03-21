@@ -3,13 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model Admin {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
   email     String   @unique
   password  String
   role      String   @default("admin")
@@ -18,10 +18,11 @@ model Admin {
 }
 
 model Patient {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String   @unique
   password  String
+  phone     String?
   role      String   @default("patient")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -30,20 +31,20 @@ model Patient {
 }
 
 model Doctor {
-  id               String          @id @default(cuid())
-  slug             String          @unique
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug             String   @unique
   name             String
-  email            String          @unique
+  email            String   @unique
   password         String
   specialty        String
   qualification    String
   profileImage     String
   phone            String
   address          String
-  totalAppointments Int?           @default(0)
-  role             String          @default("doctor")
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  totalAppointments Int?     @default(0)
+  role             String   @default("doctor")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   doctorHelpers    DoctorHelper[]
   appointments     Appointment[]
@@ -51,9 +52,9 @@ model Doctor {
 }
 
 model DoctorHelper {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   slug        String   @unique
-  doctorId    String
+  doctorId    String   @db.ObjectId
   name        String
   email       String   @unique
   password    String
@@ -66,9 +67,9 @@ model DoctorHelper {
 }
 
 model Appointment {
-  id        String   @id @default(cuid())
-  patientId String
-  doctorId  String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  patientId String   @db.ObjectId
+  doctorId  String   @db.ObjectId
   date      String
   time      String
   status    String   @default("pending")
@@ -80,8 +81,8 @@ model Appointment {
 }
 
 model Schedule {
-  id        String   @id @default(cuid())
-  doctorId  String   @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  doctorId  String   @unique @db.ObjectId
   days      String[]
   startTime String[]
   endTime   String[]

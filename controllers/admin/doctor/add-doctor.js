@@ -4,16 +4,16 @@ import { uploadImage } from "../../../utils/cloudinary.js";
 
 const doctorSignup = async (c) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      specialty,
-      qualification,
-      profileImage,
-      phone,
-      address,
-    } = await c.req.json();
+    const formData = await c.req.formData();
+
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const specialty = formData.get("specialty");
+    const qualification = formData.get("qualification");
+    const phone = formData.get("phone");
+    const address = formData.get("address");
+    const profileImage = formData.get("profileImage");
 
     if (
       !name ||
@@ -29,7 +29,6 @@ const doctorSignup = async (c) => {
     }
 
     const normalizedEmail = email.toLowerCase();
-
     const existingDoctor = await db.doctor.findUnique({
       where: { email: normalizedEmail },
     });
@@ -39,7 +38,9 @@ const doctorSignup = async (c) => {
     }
 
     const slug = name.toLowerCase().replace(/\s+/g, "-");
-    const { url } = await uploadImage(profileImage, slug, "doctor");
+    const imageBuffer = await profileImage.arrayBuffer();
+    const { url } = await uploadImage(imageBuffer, slug, "doctor");
+
     const hashedPassword = await hashPassword(password);
 
     await db.doctor.create({

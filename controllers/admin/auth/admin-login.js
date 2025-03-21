@@ -26,7 +26,7 @@ const adminLogin = async (c) => {
       return c.json({ error: "Invalid Email or Password" }, 400);
     }
 
-    const token = generateToken({ id: admin.id, role: "admin" });
+    const token = generateToken(admin.id, admin.role);
 
     return c.json(
       {

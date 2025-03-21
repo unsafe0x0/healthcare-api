@@ -8,7 +8,6 @@ const getAllPatients = async (c) => {
         name: true,
         email: true,
         phone: true,
-        address: true,
         createdAt: true,
       },
     });
