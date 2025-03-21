@@ -15,7 +15,7 @@ const server = new Hono();
 
 server.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_URL,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
