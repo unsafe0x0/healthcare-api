@@ -5,23 +5,29 @@ import { uploadImage } from "../../../utils/cloudinary.js";
 const addHelper = async (c) => {
   try {
     const { id } = c.get("user");
+    const formData = await c.req.formData();
 
-    const { name, email, password, profileImage } = await c.req.json();
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const profileImage = formData.get("profileImage");
 
     if (!name || !email || !password || !profileImage) {
       return c.json({ error: "All fields are required" }, 400);
     }
 
     const normalizedEmail = email.toLowerCase();
+    const existingHelper = await db.doctorHelper.findUnique({
+      where: { email: normalizedEmail },
+    });
 
-    const helper = await db.doctorHelper.findUnique({ where: { email } });
-
-    if (helper) {
+    if (existingHelper) {
       return c.json({ error: "Helper already exists" }, 400);
     }
 
     const slug = name.toLowerCase().replace(/\s+/g, "-");
-    const { url } = await uploadImage(profileImage, slug, "doctor-helper");
+    const imageBuffer = await profileImage.arrayBuffer();
+    const { url } = await uploadImage(imageBuffer, slug, "doctor-helper");
     const hashedPassword = await hashPassword(password);
 
     const newHelper = await db.doctorHelper.create({
@@ -37,10 +43,10 @@ const addHelper = async (c) => {
 
     return c.json(
       { message: "Helper added Successfully", helper: newHelper },
-      200,
+      201
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 };

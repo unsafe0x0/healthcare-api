@@ -13,11 +13,21 @@ const getAdmin = async (c) => {
       },
     });
 
-    if (!admin) {
-      return c.json({ error: "Admin not found" }, 404);
-    }
+    const totalPatients = await db.patient.count();
+    const totalDoctors = await db.doctor.count();
+    const totalAppointments = await db.appointment.count();
 
-    return c.json({ admin }, 200);
+    return c.json(
+      {
+        admin: {
+          ...admin,
+          totalPatients,
+          totalDoctors,
+          totalAppointments,
+        },
+      },
+      200
+    );
   } catch (error) {
     console.error(error);
     return c.json({ error: "Internal Server Error" }, 500);
