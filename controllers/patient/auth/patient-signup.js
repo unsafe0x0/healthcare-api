@@ -25,10 +25,7 @@ const patientSignup = async (c) => {
       },
     });
 
-    return c.json(
-      { message: "Signup Successfully", patient: newPatient },
-      200,
-    );
+    return c.json({ message: "Signup Successfully", patient: newPatient }, 200);
   } catch (error) {
     console.log(error);
     return c.json({ error: "Internal Server Error" }, 500);

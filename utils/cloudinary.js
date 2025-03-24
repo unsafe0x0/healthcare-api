@@ -33,7 +33,7 @@ export const uploadImage = async (arrayBuffer, imageName, folder) => {
             url: result.secure_url,
             publicId: result.public_id,
           });
-        }
+        },
       );
 
       uploadStream.end(buffer);

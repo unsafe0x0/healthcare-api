@@ -28,7 +28,7 @@ const adminSignup = async (c) => {
       },
     });
 
-    return c.json({ message: "Signup Successful" }, 201);
+    return c.json({ message: "Signup Successful" }, 200);
   } catch (error) {
     console.error(error);
     return c.json({ error: "Internal Server Error" }, 500);

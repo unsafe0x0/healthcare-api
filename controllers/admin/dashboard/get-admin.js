@@ -26,7 +26,7 @@ const getAdmin = async (c) => {
           totalAppointments,
         },
       },
-      200
+      200,
     );
   } catch (error) {
     console.error(error);

@@ -3,53 +3,56 @@ import db from "../../../prisma/db.js";
 const updateSchedule = async (c) => {
   try {
     const { id } = c.get("user");
+    const { schedule } = await c.req.json();
 
-    const { days, startTime, endTime, active } = await c.req.json();
-
-    if (!days || !startTime || !endTime || !active) {
-      return c.json({ error: "All fields are required" }, 400);
-    }
-
-    if (
-      !Array.isArray(days) ||
-      !Array.isArray(startTime) ||
-      !Array.isArray(endTime) ||
-      !Array.isArray(active) ||
-      days.length !== 7 ||
-      startTime.length !== 7 ||
-      endTime.length !== 7 ||
-      active.length !== 7
-    ) {
+    if (!Array.isArray(schedule) || schedule.length !== 7) {
       return c.json(
-        { error: "Invalid schedule format. All arrays must have 7 values." },
-        400,
+        { error: "Invalid schedule format. Must be an array of 7 days." },
+        400
       );
     }
 
-    const schedule = await db.schedule.findUnique({
+    const formattedSchedule = schedule.map((day) => ({
+      day: day.day,
+      sessions: {
+        morning: day.sessions.morning || { active: false, start: "", end: "" },
+        afternoon: day.sessions.afternoon || {
+          active: false,
+          start: "",
+          end: "",
+        },
+        evening: day.sessions.evening || { active: false, start: "", end: "" },
+      },
+    }));
+
+    const existingSchedule = await db.schedule.findUnique({
       where: { doctorId: id },
     });
 
-    if (!schedule) {
-      return c.json({ error: "Schedule does not exist" }, 400);
+    let updatedSchedule;
+
+    if (existingSchedule) {
+      updatedSchedule = await db.schedule.update({
+        where: { doctorId: id },
+        data: { entries: formattedSchedule, updatedAt: new Date() },
+      });
+    } else {
+      updatedSchedule = await db.schedule.create({
+        data: {
+          doctorId: id,
+          entries: formattedSchedule,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
     }
 
-    const updatedSchedule = await db.schedule.update({
-      where: { doctorId: id },
-      data: {
-        days,
-        startTime,
-        endTime,
-        active,
-      },
-    });
-
     return c.json(
-      { message: "Schedule updated successfully", updatedSchedule },
-      200,
+      { message: "Schedule updated successfully", schedule: updatedSchedule },
+      200
     );
   } catch (error) {
-    console.log(error);
+    console.error("Error updating schedule:", error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 };

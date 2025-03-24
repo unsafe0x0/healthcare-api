@@ -2,7 +2,7 @@ import db from "../../../prisma/db.js";
 
 const getDoctorProfile = async (c) => {
   try {
-    const { slug } = await c.req.json();
+    const { slug } = c.req.query();
 
     if (!slug) {
       return c.json({ error: "Doctor slug is required" }, 400);

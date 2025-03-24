@@ -17,7 +17,6 @@ import removePatient from "../../controllers/admin/patient/remove-patient.js";
 const adminRoutes = new Hono();
 
 adminRoutes.post("/auth/login", adminLogin);
-adminRoutes.post("/auth/signup", adminSignup);
 
 adminRoutes.use(authMiddleware(["admin"]));
 

@@ -13,8 +13,11 @@ const getDoctor = async (c) => {
         email: true,
         specialty: true,
         qualification: true,
+        address: true,
+        phone: true,
         profileImage: true,
         totalAppointments: true,
+        schedules: true,
         doctorHelpers: {
           select: {
             id: true,
@@ -40,9 +43,33 @@ const getDoctor = async (c) => {
       },
     });
 
-    if (!doctor) return c.json({ error: "Doctor does not exist" }, 400);
+    const totalAppointments = await db.appointment.count({
+      where: { doctorId: id },
+    });
 
-    return c.json({ doctor }, 200);
+    const uniquePatients = await db.appointment.findMany({
+      where: { doctorId: id },
+      select: { patientId: true },
+      distinct: ["patientId"],
+    });
+
+    const totalPatients = uniquePatients.length;
+
+    const totalHelpers = await db.doctorHelper.count({
+      where: { doctorId: id },
+    });
+
+    return c.json(
+      {
+        doctor: {
+          ...doctor,
+          totalAppointments,
+          totalPatients,
+          totalHelpers,
+        },
+      },
+      200,
+    );
   } catch (error) {
     console.error(error);
     return c.json({ error: "Internal Server Error" }, 500);

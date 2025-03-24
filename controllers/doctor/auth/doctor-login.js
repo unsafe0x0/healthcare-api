@@ -20,7 +20,7 @@ const doctorLogin = async (c) => {
       return c.json({ error: "Invalid email or password" }, 401);
     }
 
-    const token = generateToken({ id: doctor.id, role: "doctor" });
+    const token = generateToken(doctor.id, "doctor");
 
     return c.json({ message: "Login successful", token }, 200);
   } catch (error) {

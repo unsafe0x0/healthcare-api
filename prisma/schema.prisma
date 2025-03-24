@@ -82,14 +82,11 @@ model Appointment {
 }
 
 model Schedule {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  doctorId  String   @unique @db.ObjectId
-  days      String[]
-  startTime String[]
-  endTime   String[]
-  active    Boolean[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  doctorId  String    @unique @db.ObjectId
+  entries   Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor    Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }

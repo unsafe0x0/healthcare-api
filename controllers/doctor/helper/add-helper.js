@@ -43,7 +43,7 @@ const addHelper = async (c) => {
 
     return c.json(
       { message: "Helper added Successfully", helper: newHelper },
-      201
+      200,
     );
   } catch (error) {
     console.error(error);

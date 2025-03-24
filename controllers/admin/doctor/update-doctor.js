@@ -49,7 +49,7 @@ const updateDoctor = async (c) => {
 
     return c.json(
       { message: "Doctor updated successfully", doctor: updatedDoctor },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error updating doctor:", error);

@@ -4,6 +4,7 @@ const getAllDoctor = async (c) => {
   try {
     const doctors = await db.doctor.findMany({
       select: {
+        slug: true,
         name: true,
         email: true,
         specialty: true,
