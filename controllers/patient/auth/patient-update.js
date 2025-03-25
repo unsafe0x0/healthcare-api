@@ -1,5 +1,5 @@
-import db from "../../../prisma/db";
-import { hashPassword } from "../../../utils/hash-password";
+import db from "../../../prisma/db.js";
+import { hashPassword } from "../../../utils/hash-password.js";
 
 const updatePatient = async (c) => {
   try {
