@@ -14,6 +14,8 @@ import updateDoctor from "../../controllers/admin/doctor/update-doctor.js";
 import getAllPatients from "../../controllers/admin/patient/get-all.js";
 import removePatient from "../../controllers/admin/patient/remove-patient.js";
 
+import getAllHelpers from "../../controllers/admin/helpers/get-all.js";
+
 const adminRoutes = new Hono();
 
 adminRoutes.post("/auth/login", adminLogin);
@@ -29,5 +31,7 @@ adminRoutes.put("/doctor/update", updateDoctor);
 
 adminRoutes.get("/patients", getAllPatients);
 adminRoutes.delete("/patient/remove", removePatient);
+
+adminRoutes.get("/helpers", getAllHelpers);
 
 export default adminRoutes;

@@ -42,7 +42,7 @@ const updateHelper = async (c) => {
 
     return c.json(
       { message: "Helper updated successfully", helper: updatedHelper },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error updating helper:", error);

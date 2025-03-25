@@ -8,7 +8,7 @@ const updateSchedule = async (c) => {
     if (!Array.isArray(schedule) || schedule.length !== 7) {
       return c.json(
         { error: "Invalid schedule format. Must be an array of 7 days." },
-        400
+        400,
       );
     }
 
@@ -49,7 +49,7 @@ const updateSchedule = async (c) => {
 
     return c.json(
       { message: "Schedule updated successfully", schedule: updatedSchedule },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error updating schedule:", error);
