@@ -90,3 +90,4 @@ model Schedule {
 
   doctor    Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }
+

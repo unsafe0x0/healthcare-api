@@ -11,6 +11,7 @@ const getDoctorProfile = async (c) => {
     const doctor = await db.doctor.findUnique({
       where: { slug },
       select: {
+        slug: true,
         name: true,
         email: true,
         specialty: true,
@@ -19,6 +20,7 @@ const getDoctorProfile = async (c) => {
         totalAppointments: true,
         phone: true,
         address: true,
+        schedules: true,
       },
     });
 
