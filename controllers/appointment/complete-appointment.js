@@ -2,17 +2,9 @@ import db from "../../prisma/db.js";
 
 const completeAppointment = async (c) => {
   try {
-    const { appointmentId } = c.req.body;
+    const { appointmentId } = await c.req.json();
 
-    const appointment = await db.appointment.findUnique({
-      where: { id: appointmentId },
-    });
-
-    if (!appointment) {
-      return c.json({ error: "Appointment not found" }, 404);
-    }
-
-    const updatedAppointment = await db.appointment.update({
+    const appointment = await db.appointment.update({
       where: { id: appointmentId },
       data: { status: "completed" },
     });
@@ -20,7 +12,7 @@ const completeAppointment = async (c) => {
     return c.json(
       {
         message: "Appointment completed successfully",
-        appointment: updatedAppointment,
+        appointment,
       },
       200,
     );

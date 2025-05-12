@@ -2,7 +2,7 @@ import db from "../../prisma/db.js";
 
 const cancelAppointment = async (c) => {
   try {
-    const { appointmentId } = c.req.json();
+    const { appointmentId } = await c.req.json();
 
     const cancelAppointment = await db.appointment.update({
       where: { id: appointmentId },
@@ -14,7 +14,7 @@ const cancelAppointment = async (c) => {
         message: "Appointment cancelled successfully",
         appointment: cancelAppointment,
       },
-      200,
+      200
     );
   } catch (error) {
     console.log(error);

@@ -9,17 +9,17 @@ import completeAppointment from "../../controllers/appointment/complete-appointm
 const appointmentRoutes = new Hono();
 
 appointmentRoutes.post("/new", authMiddleware("patient"), newAppointment);
-appointmentRoutes.post(
+appointmentRoutes.put(
   "/accept",
   authMiddleware(["doctor", "doctorHelper"]),
   acceptAppointment,
 );
-appointmentRoutes.post(
+appointmentRoutes.put(
   "/cancel",
   authMiddleware(["patient", "doctor", "doctorHelper"]),
   cancelAppointment,
 );
-appointmentRoutes.post(
+appointmentRoutes.put(
   "/complete",
   authMiddleware(["doctor", "doctorHelper"]),
   completeAppointment,
