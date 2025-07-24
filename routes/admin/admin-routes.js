@@ -19,6 +19,7 @@ import getAllHelpers from "../../controllers/admin/helpers/get-all.js";
 const adminRoutes = new Hono();
 
 adminRoutes.post("/auth/login", adminLogin);
+adminRoutes.post("/auth/signup", adminSignup);
 
 adminRoutes.use(authMiddleware(["admin"]));
 

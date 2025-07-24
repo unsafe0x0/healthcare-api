@@ -3,10 +3,10 @@ import { hashPassword } from "../../../utils/hash-password.js";
 
 const adminSignup = async (c) => {
   try {
-    const { email, password } = await c.req.json();
+    const { name, email, password } = await c.req.json();
 
-    if (!email || !password) {
-      return c.json({ error: "Email and Password are required" }, 400);
+    if (!name || !email || !password) {
+      return c.json({ error: "Name, Email and Password are required" }, 400);
     }
 
     const normalizedEmail = email.toLowerCase();
@@ -23,6 +23,7 @@ const adminSignup = async (c) => {
 
     await db.admin.create({
       data: {
+        name,
         email: normalizedEmail,
         password: hashedPassword,
       },

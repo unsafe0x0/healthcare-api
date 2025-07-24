@@ -26,7 +26,7 @@ const newAppointment = async (c) => {
     if (existingAppointment) {
       return c.json(
         { error: "Appointment already booked. Choose another time." },
-        400
+        400,
       );
     }
 
@@ -92,7 +92,7 @@ const newAppointment = async (c) => {
 
     return c.json(
       { message: "Appointment booked successfully", appointment },
-      200
+      200,
     );
   } catch (error) {
     console.log(error);

@@ -14,7 +14,7 @@ const cancelAppointment = async (c) => {
         message: "Appointment cancelled successfully",
         appointment: cancelAppointment,
       },
-      200
+      200,
     );
   } catch (error) {
     console.log(error);
