@@ -15,6 +15,14 @@ const doctorSignup = async (c) => {
     const address = formData.get("address");
     const profileImage = formData.get("profileImage");
 
+    const dob = formData.get("dob") || null;
+    const gender = formData.get("gender") || null;
+    const consultationFeeRaw = formData.get("consultationFee");
+    const yearsOfExperienceRaw = formData.get("yearsOfExperience");
+
+    const consultationFee = consultationFeeRaw ? parseInt(consultationFeeRaw) : null;
+    const yearsOfExperience = yearsOfExperienceRaw ? parseInt(yearsOfExperienceRaw) : null;
+
     if (
       !name ||
       !email ||
@@ -25,7 +33,7 @@ const doctorSignup = async (c) => {
       !phone ||
       !address
     ) {
-      return c.json({ error: "All fields are required" }, 400);
+      return c.json({ error: "All required fields must be provided" }, 400);
     }
 
     const normalizedEmail = email.toLowerCase();
@@ -54,6 +62,10 @@ const doctorSignup = async (c) => {
         profileImage: url,
         phone,
         address,
+        dob,
+        gender,
+        consultationFee,
+        yearsOfExperience,
       },
     });
 

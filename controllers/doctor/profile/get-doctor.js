@@ -21,6 +21,9 @@ const getDoctorProfile = async (c) => {
         phone: true,
         address: true,
         schedules: true,
+        yearsOfExperience: true,
+        consultationFee: true,
+        gender: true,
       },
     });
 

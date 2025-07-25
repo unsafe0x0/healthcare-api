@@ -17,6 +17,10 @@ const getDoctor = async (c) => {
         phone: true,
         profileImage: true,
         totalAppointments: true,
+        yearsOfExperience: true,
+        consultationFee: true,
+        gender: true,
+        dob: true,
         schedules: true,
         doctorHelpers: {
           select: {

@@ -12,6 +12,9 @@ const getAllDoctor = async (c) => {
         profileImage: true,
         totalAppointments: true,
         address: true,
+        yearsOfExperience: true,
+        consultationFee: true,
+        gender: true,
       },
     });
 

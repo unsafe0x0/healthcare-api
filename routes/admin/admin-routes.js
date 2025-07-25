@@ -29,10 +29,10 @@ adminRoutes.get("/doctors", getAllDoctors);
 adminRoutes.post("/doctor/add", addDoctor);
 adminRoutes.delete("/doctor/remove", removeDoctor);
 adminRoutes.put("/doctor/update", updateDoctor);
+adminRoutes.get("/doctor/helpers", getAllHelpers);
 
 adminRoutes.get("/patients", getAllPatients);
 adminRoutes.delete("/patient/remove", removePatient);
 
-adminRoutes.get("/helpers", getAllHelpers);
 
 export default adminRoutes;

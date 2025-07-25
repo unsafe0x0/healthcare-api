@@ -13,6 +13,10 @@ const getAllDoctors = async (c) => {
         phone: true,
         address: true,
         totalAppointments: true,
+        yearsOfExperience: true,
+        gender: true,
+        consultationFee: true,
+        dob: true,
       },
     });
 
