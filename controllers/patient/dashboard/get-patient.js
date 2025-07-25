@@ -14,6 +14,9 @@ const getPatient = async (c) => {
           select: {
             id: true,
             date: true,
+            time: true,
+            subject: true,
+            status: true,
             doctor: {
               select: {
                 name: true,

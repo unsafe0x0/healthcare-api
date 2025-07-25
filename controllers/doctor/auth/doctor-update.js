@@ -17,12 +17,9 @@ const updateDoctor = async (c) => {
     const profileImage = formData.get("profileImage");
 
     const dob = formData.get("dob") || null;
-    const gender = formData.get("gender") || null;
     const consultationFeeRaw = formData.get("consultationFee");
-    const yearsOfExperienceRaw = formData.get("yearsOfExperience");
 
     const consultationFee = consultationFeeRaw ? parseInt(consultationFeeRaw) : null;
-    const yearsOfExperience = yearsOfExperienceRaw ? parseInt(yearsOfExperienceRaw) : null;
 
     const doctor = await db.doctor.findUnique({ where: { id } });
     if (!doctor) {
@@ -38,9 +35,7 @@ const updateDoctor = async (c) => {
     if (phone) updatedData.phone = phone;
     if (address) updatedData.address = address;
     if (dob) updatedData.dob = dob;
-    if (gender) updatedData.gender = gender;
     if (consultationFee !== null) updatedData.consultationFee = consultationFee;
-    if (yearsOfExperience !== null) updatedData.yearsOfExperience = yearsOfExperience;
     if (password) updatedData.password = await hashPassword(password);
 
     if (profileImage) {
