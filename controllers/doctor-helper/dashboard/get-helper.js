@@ -20,18 +20,20 @@ const getHelper = async (c) => {
             qualification: true,
             profileImage: true,
             totalAppointments: true,
-          },
-        },
-        doctorAppointments: {
-          select: {
-            id: true,
-            date: true,
-            status: true,
-            patient: {
+            appointments: {
               select: {
                 id: true,
-                name: true,
-                email: true,
+                date: true,
+                time: true,
+                subject: true,
+                status: true,
+                patient: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
               },
             },
           },
@@ -45,7 +47,7 @@ const getHelper = async (c) => {
 
     return c.json({ helper }, 200);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 };
