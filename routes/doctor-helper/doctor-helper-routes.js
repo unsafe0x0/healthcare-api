@@ -9,7 +9,7 @@ const doctorHelperRoutes = new Hono();
 
 doctorHelperRoutes.post("/auth/login", helperLogin);
 
-doctorHelperRoutes.use(authMiddleware("doctorHelper"));
+doctorHelperRoutes.use(authMiddleware("doctor-helper"));
 
 doctorHelperRoutes.put("/auth/update", helperUpdate);
 doctorHelperRoutes.get("/dashboard", getHelper);

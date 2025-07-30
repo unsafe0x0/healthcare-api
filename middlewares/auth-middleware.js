@@ -25,7 +25,7 @@ const authMiddleware = (roles) => {
         user = await db.patient.findUnique({ where: { id } });
       } else if (role === "doctor") {
         user = await db.doctor.findUnique({ where: { id } });
-      } else if (role === "doctorHelper") {
+      } else if (role === "doctor-helper") {
         user = await db.doctorHelper.findUnique({ where: { id } });
       }
 

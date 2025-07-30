@@ -63,7 +63,7 @@ model DoctorHelper {
   email        String   @unique
   password     String
   profileImage String
-  role         String   @default("doctorHelper")
+  role         String   @default("doctor-helper")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

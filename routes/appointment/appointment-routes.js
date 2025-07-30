@@ -11,17 +11,17 @@ const appointmentRoutes = new Hono();
 appointmentRoutes.post("/new", authMiddleware("patient"), newAppointment);
 appointmentRoutes.put(
   "/accept",
-  authMiddleware(["doctor", "doctorHelper"]),
+  authMiddleware(["doctor", "doctor-helper"]),
   acceptAppointment,
 );
 appointmentRoutes.put(
   "/cancel",
-  authMiddleware(["patient", "doctor", "doctorHelper"]),
+  authMiddleware(["patient", "doctor", "doctor-helper"]),
   cancelAppointment,
 );
 appointmentRoutes.put(
   "/complete",
-  authMiddleware(["doctor", "doctorHelper"]),
+  authMiddleware(["doctor", "doctor-helper"]),
   completeAppointment,
 );
 
