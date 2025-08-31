@@ -20,9 +20,9 @@ model Admin {
 model Patient {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  email     String   @unique
+  email     String?  @unique
   password  String
-  phone     String?
+  phone     String?  @unique
   role      String   @default("patient")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -50,9 +50,23 @@ model Doctor {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  doctorHelpers DoctorHelper[]
-  appointments  Appointment[]
-  schedules     Schedule[]
+  additionalPatients AdditionalPatients[]
+  doctorHelpers      DoctorHelper[]
+  appointments       Appointment[]
+  schedules          Schedule[]
+}
+
+model AdditionalPatients {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  phone     String   @unique
+  subject   String
+  role      String   @default("additional-patient")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctorId String @db.ObjectId
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }
 
 model DoctorHelper {
@@ -72,7 +86,7 @@ model DoctorHelper {
 
 model Appointment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  patientId String   @db.ObjectId
+  patientId String?  @db.ObjectId
   doctorId  String   @db.ObjectId
   date      String
   time      String
@@ -81,8 +95,8 @@ model Appointment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient Patient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }
 
 model Schedule {

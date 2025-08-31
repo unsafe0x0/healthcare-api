@@ -10,6 +10,7 @@ const getPatient = async (c) => {
         id: true,
         name: true,
         email: true,
+        phone: true,
         appointments: {
           select: {
             id: true,

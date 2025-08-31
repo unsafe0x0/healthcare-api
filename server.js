@@ -9,6 +9,7 @@ import doctorRoutes from "./routes/doctor/doctor-routes.js";
 import doctorHelperRoutes from "./routes/doctor-helper/doctor-helper-routes.js";
 import appointmentRoutes from "./routes/appointment/appointment-routes.js";
 import patientRoutes from "./routes/patient/patient-routes.js";
+import additionalPatientRoutes from "./routes/additional-patient/additional-patient-routes.js";
 
 dotenv.config();
 const server = new Hono();
@@ -38,6 +39,7 @@ server.route("/doctor", doctorRoutes);
 server.route("/doctor-helper", doctorHelperRoutes);
 server.route("/appointment", appointmentRoutes);
 server.route("/patient", patientRoutes);
+server.route("/additional-patient", additionalPatientRoutes);
 
 const PORT = process.env.PORT || 3000;
 
