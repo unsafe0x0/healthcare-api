@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import authMiddleware from "../../middlewares/auth-middleware";
+import authMiddleware from "../../middlewares/auth-middleware.js";
 
 import newPatient from "../../controllers/additional-patient/new-patient.js";
 import getPatients from "../../controllers/additional-patient/get-patients.js";
