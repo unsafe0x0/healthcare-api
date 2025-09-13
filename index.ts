@@ -88,7 +88,7 @@ app.addHook("onResponse", async (request, reply) => {
 const start = async () => {
   try {
     const PORT = parseInt(process.env.PORT || "3000", 10);
-    await app.listen({ port: PORT });
+    await app.listen({ port: PORT, host: "0.0.0.0" });
     console.log(`Server listening on port ${PORT}`);
   } catch (err) {
     console.error(err);
