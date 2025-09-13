@@ -70,16 +70,20 @@ model AdditionalPatients {
 }
 
 model DoctorHelper {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  slug         String   @unique
-  doctorId     String   @db.ObjectId
-  name         String
-  email        String   @unique
-  password     String
-  profileImage String
-  role         String   @default("doctor-helper")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug          String   @unique
+  doctorId      String   @db.ObjectId
+  name          String
+  email         String   @unique
+  password      String
+  profileImage  String
+  phone         String?  @unique
+  qualification String?
+  dob           String?
+  gender        String?
+  role          String   @default("doctorhelper")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }
@@ -107,4 +111,15 @@ model Schedule {
   updatedAt DateTime @updatedAt
 
   doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  method    String
+  url       String
+  action    String
+  userId    String?
+  role      String?
+  ip        String?
+  timestamp DateTime @default(now())
 }
