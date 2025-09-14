@@ -6,13 +6,13 @@ import { hashPassword } from "../../utils/hashPassword";
 const signupSchema = z
   .object({
     name: z.string().min(1),
-    email: z.string().email().optional(),
-    phone: z.string().min(10).max(15).optional(),
+    email: z.string().email().optional().nullable(),
+    phone: z.string().min(10).max(15).optional().nullable(),
     password: z.string().min(6),
   })
   .refine((data) => data.email || data.phone, {
     message: "Either email or phone must be provided",
-    path: ["email", "phone"],
+    path: ["email"],
   });
 
 const patientSignup = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -43,7 +43,7 @@ const patientSignup = async (request: FastifyRequest, reply: FastifyReply) => {
       },
     });
 
-    return reply.status(201).send({ message: "Sign up successfully" });
+    return reply.status(201).send({ message: "Signup successful" });
   } catch (error) {
     console.error("Error signing up:", error);
     return reply.status(500).send("Internal Server Error");
