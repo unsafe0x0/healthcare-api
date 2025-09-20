@@ -14,6 +14,7 @@ interface Session {
   active: boolean;
   start?: string;
   end?: string;
+  slots?: string[];
 }
 
 interface ScheduleEntry {
@@ -43,12 +44,10 @@ const newAppointment = async (request: FastifyRequest, reply: FastifyReply) => {
     if (!doctor) return reply.status(404).send({ error: "Doctor not found" });
 
     const existingAppointment = await DbClient.appointment.findFirst({
-      where: { doctorId: doctor.id, patientId, date, time },
+      where: { doctorId: doctor.id, date, time },
     });
     if (existingAppointment)
-      return reply
-        .status(400)
-        .send({ error: "Appointment already booked. Choose another time." });
+      return reply.status(400).send({ error: "Not available at this slot" });
 
     const schedules = doctor.schedules ?? [];
     if (schedules.length === 0)
@@ -69,28 +68,10 @@ const newAppointment = async (request: FastifyRequest, reply: FastifyReply) => {
         .status(400)
         .send({ error: `Doctor not available on ${dayName}` });
 
-    const timeToMinutes = (t: string) => {
-      const parts = t.split(":");
-      if (parts.length !== 2) return NaN;
-      const h = Number(parts[0]);
-      const m = Number(parts[1]);
-      if (isNaN(h) || isNaN(m)) return NaN;
-      return h * 60 + m;
-    };
-
-    const isTimeInRange = (start?: string, end?: string, t?: string) => {
-      if (!start || !end || !t) return false;
-      const tMin = timeToMinutes(t);
-      const startMin = timeToMinutes(start);
-      const endMin = timeToMinutes(end);
-      if (isNaN(tMin) || isNaN(startMin) || isNaN(endMin)) return false;
-      return startMin <= tMin && tMin <= endMin;
-    };
-
     let available = false;
     for (const sessionName of ["morning", "afternoon", "evening"] as const) {
       const session = daySchedule.sessions[sessionName];
-      if (session?.active && isTimeInRange(session.start, session.end, time)) {
+      if (session?.active && session?.slots?.includes(time)) {
         available = true;
         break;
       }
@@ -99,7 +80,7 @@ const newAppointment = async (request: FastifyRequest, reply: FastifyReply) => {
     if (!available)
       return reply
         .status(400)
-        .send({ error: "Doctor not available at this time" });
+        .send({ error: "Doctor not available at this slot" });
 
     const appointment = await DbClient.appointment.create({
       data: { doctorId: doctor.id, patientId, date, time, subject },

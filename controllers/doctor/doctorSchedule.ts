@@ -1,10 +1,14 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
 import DbClient from "../../prisma/DbClient";
+import { generateTimeSlots } from "../../utils/generateTimeSlots";
 
 const scheduleSchema = z.array(
   z.object({
     day: z.string(),
+    active: z.boolean(),
+    gap: z.number().min(1).max(60).optional(),
+    duration: z.number().min(1).max(60).optional(),
     sessions: z.object({
       morning: z
         .object({
@@ -28,7 +32,7 @@ const scheduleSchema = z.array(
         })
         .optional(),
     }),
-  })
+  }),
 );
 
 const doctorSchedule = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -47,18 +51,36 @@ const doctorSchedule = async (request: FastifyRequest, reply: FastifyReply) => {
       });
     }
 
-    const formattedSchedule = parsed.data.map((day) => ({
-      day: day.day,
-      sessions: {
-        morning: day.sessions.morning || { active: false, start: "", end: "" },
-        afternoon: day.sessions.afternoon || {
-          active: false,
-          start: "",
-          end: "",
-        },
-        evening: day.sessions.evening || { active: false, start: "", end: "" },
-      },
-    }));
+    const formattedSchedule = parsed.data.map((day) => {
+      const gap = day.gap || 5;
+      const duration = day.duration || 10;
+
+      const sessionsWithSlots: any = {};
+
+      ["morning", "afternoon", "evening"].forEach((sessionName) => {
+        const session = (day.sessions as any)[sessionName];
+        if (session && session.active && session.start && session.end) {
+          sessionsWithSlots[sessionName] = {
+            ...session,
+            slots: generateTimeSlots(session.start, session.end, duration, gap),
+          };
+        } else {
+          sessionsWithSlots[sessionName] = {
+            active: false,
+            start: "",
+            end: "",
+            slots: [],
+          };
+        }
+      });
+
+      return {
+        day: day.day,
+        gap,
+        duration,
+        sessions: sessionsWithSlots,
+      };
+    });
 
     const existingSchedule = await DbClient.schedule.findUnique({
       where: { doctorId: user.id },

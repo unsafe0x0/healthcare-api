@@ -34,7 +34,7 @@ const patientLogin = async (request: FastifyRequest, reply: FastifyReply) => {
     }
 
     const token = generateToken(user.id, "patient");
-    
+
     return reply.status(200).send({
       message: "Login Successful",
       token,

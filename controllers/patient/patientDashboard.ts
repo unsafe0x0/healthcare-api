@@ -3,7 +3,7 @@ import DbClient from "../../prisma/DbClient";
 
 const patientDashboard = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const user = (request as any).user;
 

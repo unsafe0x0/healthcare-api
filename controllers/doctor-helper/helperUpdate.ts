@@ -88,12 +88,12 @@ const helperUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
       const imageBuffer = Buffer.from(profileImage.data);
       const arrayBuffer = imageBuffer.buffer.slice(
         imageBuffer.byteOffset,
-        imageBuffer.byteOffset + imageBuffer.byteLength
+        imageBuffer.byteOffset + imageBuffer.byteLength,
       );
       const { url } = (await uploadImage(
         arrayBuffer,
         updateData.slug || existingHelper.slug,
-        "doctorhelper"
+        "doctorhelper",
       )) as { url: string };
       updateData.profileImage = url;
     }

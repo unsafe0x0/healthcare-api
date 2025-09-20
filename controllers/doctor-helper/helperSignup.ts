@@ -65,14 +65,12 @@ const helperSignup = async (request: FastifyRequest, reply: FastifyReply) => {
     const imageBuffer = Buffer.from(profileImage.data);
     const arrayBuffer = imageBuffer.buffer.slice(
       imageBuffer.byteOffset,
-      imageBuffer.byteOffset + imageBuffer.byteLength
+      imageBuffer.byteOffset + imageBuffer.byteLength,
     );
 
-    const { url } = (await uploadImage(
-      arrayBuffer,
-      slug,
-      "doctorhelper"
-    )) as { url: string };
+    const { url } = (await uploadImage(arrayBuffer, slug, "doctorhelper")) as {
+      url: string;
+    };
 
     const hashedPassword = await hashPassword(password);
 

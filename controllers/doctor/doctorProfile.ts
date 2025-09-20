@@ -9,7 +9,7 @@ interface DoctorProfileRequest {
 
 const doctorProfile = async (
   request: FastifyRequest<DoctorProfileRequest>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const { slug } = request.params;

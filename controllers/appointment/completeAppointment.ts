@@ -10,7 +10,7 @@ interface CompleteAppointmentRequest {
 
 const completeAppointment = async (
   request: FastifyRequest<CompleteAppointmentRequest>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const { appointmentId } = request.params;
 

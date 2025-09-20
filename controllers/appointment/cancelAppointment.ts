@@ -10,7 +10,7 @@ interface CancelAppointmentRequest {
 
 const cancelAppointment = async (
   request: FastifyRequest<CancelAppointmentRequest>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const { appointmentId } = request.params;
 
