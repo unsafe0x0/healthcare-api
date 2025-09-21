@@ -40,13 +40,49 @@ const completeAppointment = async (
 
       if (patient?.email && patient?.name) {
         const body = `
-          <div style="font-family: Arial, sans-serif; padding: 20px; background: #f8f9fa; border-radius: 8px; color: #333;">
-            <h2 style="color: #007bff;">✅ Appointment Completed</h2>
-            <p>Dear Mr/Ms <strong>${patient.name}</strong>,</p>
-            <p>Your appointment for <strong>${appointment.date}</strong> at <strong>${appointment.time}</strong> has been marked as <span style="color:#007bff; font-weight:bold;">complete</span>.</p>
-            <p>Thank you for visiting the clinic.</p>
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
-            <p style="font-size: 0.9em; color: #666;">This is an automated notification. Please do not reply.</p>
+          <div style="max-width:600px;margin:0 auto;padding:12px;
+                      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+                      background:#ffffff;border-radius:12px;
+                      box-shadow:0 4px 12px rgba(0,0,0,0.08);color:#2d3748;">
+
+            <div style="text-align:center;margin-bottom:24px;">
+              <h1 style="margin:0;font-size:24px;color:#2b6cb0;">
+                Appointment Completed
+              </h1>
+              <p style="margin-top:8px;font-size:16px;color:#4a5568;">
+                Thank you for visiting our clinic
+              </p>
+            </div>
+
+            <p style="font-size:16px;line-height:1.6;">
+              Hello <strong>${patient.name}</strong>,
+            </p>
+
+            <p style="font-size:16px;line-height:1.6;">
+              Your appointment on <strong>${appointment?.date}</strong> at
+              <strong>${appointment?.time}</strong> has been marked as
+              <span style="color:#2b6cb0;font-weight:bold;">complete</span>.
+            </p>
+
+            <div style="background:#e6f3ff;border:1px solid #90cdf4;
+                        border-radius:8px;padding:16px;margin:24px 0;">
+              <p style="margin:0;font-size:15px;color:#2d3748;">
+                <strong>Appointment ID:</strong> <code style="background:#f0f9ff;padding:2px 6px;border-radius:4px;font-family:monospace;">${appointment?.appointmentId}</code>
+              </p>
+            </div>
+
+            <div style="background:#f7fafc;border:1px solid #e2e8f0;
+                        border-radius:8px;padding:16px;margin:24px 0;">
+              <p style="margin:0;font-size:15px;color:#2d3748;">
+                We appreciate your trust and hope the visit met your expectations.
+              </p>
+            </div>
+
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:32px 0;" />
+
+            <p style="font-size:13px;color:#a0aec0;text-align:center;">
+              This is an automated notification—please don't reply.
+            </p>
           </div>
         `;
 

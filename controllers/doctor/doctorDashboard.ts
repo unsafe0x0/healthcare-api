@@ -35,11 +35,16 @@ const doctorDashboard = async (
             name: true,
             email: true,
             profileImage: true,
+            qualification: true,
+            phone: true,
+            dob: true,
+            gender: true,
           },
         },
         appointments: {
           select: {
             id: true,
+            appointmentId: true,
             date: true,
             time: true,
             subject: true,

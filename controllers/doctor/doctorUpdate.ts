@@ -13,29 +13,46 @@ const doctorUpdateSchema = z.object({
   qualification: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
-  dob: z.string().nullable().optional(),
-  gender: z.string().nullable().optional(),
-  consultationFee: z.number().nullable().optional(),
-  yearsOfExperience: z.number().nullable().optional(),
-  profileImage: z
-    .object({
-      data: z.array(z.number()),
-      name: z.string(),
-      type: z.string(),
-    })
-    .optional(),
+  dob: z.string().optional().nullable(),
+  gender: z.string().optional().nullable(),
+  consultationFee: z.number().optional().nullable(),
+  yearsOfExperience: z.number().optional().nullable(),
 });
 
 const doctorUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
   const user = (request as any).user;
-
   if (!user || (user.role !== "admin" && user.role !== "doctor")) {
     return reply.status(403).send({ error: "Forbidden" });
   }
 
   try {
-    const parsed = doctorUpdateSchema.safeParse(request.body);
+    const body = request.body as any;
+    const extractValue = (field: any) =>
+      field && typeof field === "object" && "value" in field
+        ? field.value
+        : field;
+    const fields = {
+      id: extractValue(body.id),
+      name: extractValue(body.name),
+      email: extractValue(body.email),
+      password: extractValue(body.password),
+      specialty: extractValue(body.specialty),
+      qualification: extractValue(body.qualification),
+      phone: extractValue(body.phone),
+      address: extractValue(body.address),
+      dob: body.dob !== undefined ? extractValue(body.dob) : undefined,
+      gender: body.gender !== undefined ? extractValue(body.gender) : undefined,
+      consultationFee:
+        body.consultationFee !== undefined
+          ? parseInt(extractValue(body.consultationFee))
+          : undefined,
+      yearsOfExperience:
+        body.yearsOfExperience !== undefined
+          ? parseInt(extractValue(body.yearsOfExperience))
+          : undefined,
+    };
 
+    const parsed = doctorUpdateSchema.safeParse(fields);
     if (!parsed.success) {
       return reply.status(400).send({ error: parsed.error.issues });
     }
@@ -53,13 +70,9 @@ const doctorUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
       gender,
       consultationFee,
       yearsOfExperience,
-      profileImage,
     } = parsed.data;
 
-    const existingDoctor = await DbClient.doctor.findUnique({
-      where: { id },
-    });
-
+    const existingDoctor = await DbClient.doctor.findUnique({ where: { id } });
     if (!existingDoctor) {
       return reply.status(404).send({ error: "Doctor not found" });
     }
@@ -75,7 +88,17 @@ const doctorUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
       updateData.slug = name.toLowerCase().replace(/\s+/g, "-");
     }
 
-    if (email) updateData.email = email.toLowerCase();
+    if (email) {
+      const normalizedEmail = email.toLowerCase();
+      const emailConflict = await DbClient.doctor.findUnique({
+        where: { email: normalizedEmail },
+      });
+      if (emailConflict && emailConflict.id !== id) {
+        return reply.status(400).send({ error: "Email already in use" });
+      }
+      updateData.email = normalizedEmail;
+    }
+
     if (password) updateData.password = await hashPassword(password);
     if (specialty) updateData.specialty = specialty;
     if (qualification) updateData.qualification = qualification;
@@ -88,18 +111,17 @@ const doctorUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
     if (yearsOfExperience !== undefined)
       updateData.yearsOfExperience = yearsOfExperience;
 
-    if (profileImage) {
-      const imageBuffer = Buffer.from(profileImage.data);
-      const arrayBuffer = imageBuffer.buffer.slice(
-        imageBuffer.byteOffset,
-        imageBuffer.byteOffset + imageBuffer.byteLength,
-      );
-      const { url } = (await uploadImage(
-        arrayBuffer,
-        updateData.slug || existingDoctor.slug,
-        "doctor",
-      )) as { url: string };
-      updateData.profileImage = url;
+    const file = body.profileImage;
+    if (file && typeof file.toBuffer === "function") {
+      const imageBuffer = await file.toBuffer();
+      if (imageBuffer.length > 0) {
+        const { url } = await uploadImage(
+          imageBuffer,
+          updateData.slug || existingDoctor.slug,
+          "doctor"
+        );
+        updateData.profileImage = url;
+      }
     }
 
     await DbClient.doctor.update({

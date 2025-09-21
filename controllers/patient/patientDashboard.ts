@@ -21,6 +21,7 @@ const patientDashboard = async (
         appointments: {
           select: {
             id: true,
+            appointmentId: true,
             date: true,
             time: true,
             subject: true,

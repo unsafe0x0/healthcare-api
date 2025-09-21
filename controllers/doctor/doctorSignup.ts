@@ -14,13 +14,8 @@ const doctorSignupSchema = z.object({
   address: z.string(),
   dob: z.string().optional().nullable(),
   gender: z.string().optional().nullable(),
-  consultationFee: z.string().optional().nullable(),
-  yearsOfExperience: z.string().optional().nullable(),
-  profileImage: z.object({
-    data: z.array(z.number()),
-    name: z.string(),
-    type: z.string(),
-  }),
+  consultationFee: z.number().optional().nullable(),
+  yearsOfExperience: z.number().optional().nullable(),
 });
 
 const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -31,7 +26,29 @@ const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
   }
 
   try {
-    const parsed = doctorSignupSchema.safeParse(request.body);
+    const body = request.body as any;
+    const extractValue = (field: any) =>
+      field && typeof field === "object" && "value" in field
+        ? field.value
+        : field;
+    const fields = {
+      name: extractValue(body.name),
+      email: extractValue(body.email),
+      password: extractValue(body.password),
+      specialty: extractValue(body.specialty),
+      qualification: extractValue(body.qualification),
+      phone: extractValue(body.phone),
+      address: extractValue(body.address),
+      dob: extractValue(body.dob),
+      gender: extractValue(body.gender),
+      consultationFee: body.consultationFee
+        ? parseInt(extractValue(body.consultationFee))
+        : undefined,
+      yearsOfExperience: body.yearsOfExperience
+        ? parseInt(extractValue(body.yearsOfExperience))
+        : undefined,
+    };
+    const parsed = doctorSignupSchema.safeParse(fields);
 
     if (!parsed.success) {
       return reply.status(400).send({ error: parsed.error.issues });
@@ -49,7 +66,6 @@ const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
       gender,
       consultationFee,
       yearsOfExperience,
-      profileImage,
     } = parsed.data;
 
     const normalizedEmail = email.toLowerCase();
@@ -64,14 +80,17 @@ const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
 
     const slug = name.toLowerCase().replace(/\s+/g, "-");
 
-    const imageBuffer = Buffer.from(profileImage.data);
-    const arrayBuffer = imageBuffer.buffer.slice(
-      imageBuffer.byteOffset,
-      imageBuffer.byteOffset + imageBuffer.byteLength,
-    );
-    const { url } = (await uploadImage(arrayBuffer, slug, "doctor")) as {
-      url: string;
-    };
+    const file = body.profileImage;
+    if (!file || typeof file.toBuffer !== "function") {
+      return reply.status(400).send({ error: "Profile image is required" });
+    }
+    const imageBuffer = await file.toBuffer();
+    if (imageBuffer.length === 0) {
+      return reply
+        .status(400)
+        .send({ error: "Uploaded profile image is empty" });
+    }
+    const { url } = await uploadImage(imageBuffer, slug, "doctor");
 
     const hashedPassword = await hashPassword(password);
 
@@ -88,10 +107,8 @@ const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
         address,
         dob: dob || null,
         gender: gender || null,
-        consultationFee: consultationFee ? parseInt(consultationFee) : null,
-        yearsOfExperience: yearsOfExperience
-          ? parseInt(yearsOfExperience)
-          : null,
+        consultationFee: consultationFee,
+        yearsOfExperience: yearsOfExperience,
       },
     });
 

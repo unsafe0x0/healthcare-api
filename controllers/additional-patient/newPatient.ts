@@ -6,6 +6,9 @@ const newPatientSchema = z.object({
   name: z.string().min(2),
   phone: z.string().min(10).max(15),
   subject: z.string().min(2),
+  consultationFee: z.number().optional(),
+  date: z.string().optional(),
+  time: z.string().optional(),
 });
 
 const newPatient = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -42,6 +45,9 @@ const newPatient = async (request: FastifyRequest, reply: FastifyReply) => {
         name,
         phone,
         subject,
+        consultationFee: result.data.consultationFee || 0,
+        date: result.data.date || "",
+        time: result.data.time || "",
         doctorId: doctorId,
       },
     });

@@ -61,6 +61,9 @@ model AdditionalPatients {
   name      String
   phone     String   @unique
   subject   String
+  consultationFee Int
+  date      String
+  time      String
   role      String   @default("additional-patient")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -77,10 +80,10 @@ model DoctorHelper {
   email         String   @unique
   password      String
   profileImage  String
-  phone         String?  @unique
-  qualification String?
-  dob           String?
-  gender        String?
+  phone         String  @unique
+  qualification String
+  dob           String
+  gender        String
   role          String   @default("doctorhelper")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -89,15 +92,17 @@ model DoctorHelper {
 }
 
 model Appointment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  patientId String?  @db.ObjectId
-  doctorId  String   @db.ObjectId
-  date      String
-  time      String
-  subject   String
-  status    String   @default("pending")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  appointmentId String   @unique
+  patientId     String?  @db.ObjectId
+  doctorId      String   @db.ObjectId
+  date          String
+  time          String
+  subject       String
+  status        String   @default("pending")
+  appointmentQR String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   patient Patient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctor  Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)

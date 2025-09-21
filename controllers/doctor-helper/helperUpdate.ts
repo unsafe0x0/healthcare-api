@@ -11,15 +11,8 @@ const helperUpdateSchema = z.object({
   password: z.string().min(6).optional(),
   qualification: z.string().optional(),
   phone: z.string().optional(),
-  dob: z.string().nullable().optional(),
-  gender: z.string().nullable().optional(),
-  profileImage: z
-    .object({
-      data: z.array(z.number()),
-      name: z.string(),
-      type: z.string(),
-    })
-    .optional(),
+  dob: z.string().optional().nullable(),
+  gender: z.string().optional().nullable(),
 });
 
 const helperUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -30,71 +23,83 @@ const helperUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
   }
 
   try {
-    const parsed = helperUpdateSchema.safeParse(request.body);
+    const body = request.body as any;
+    const extractValue = (field: any) =>
+      field && typeof field === "object" && "value" in field
+        ? field.value
+        : field;
+    const fields = {
+      id: extractValue(body.id),
+      name: extractValue(body.name),
+      email: extractValue(body.email),
+      password: extractValue(body.password),
+      qualification: extractValue(body.qualification),
+      phone: extractValue(body.phone),
+      dob: body.dob !== undefined ? extractValue(body.dob) : undefined,
+      gender: body.gender !== undefined ? extractValue(body.gender) : undefined,
+    };
 
+    const parsed = helperUpdateSchema.safeParse(fields);
     if (!parsed.success) {
-      console.log("Validation errors:", parsed.error.issues);
       return reply.status(400).send({ error: parsed.error.issues });
     }
 
-    const {
-      id,
-      name,
-      email,
-      password,
-      qualification,
-      phone,
-      dob,
-      gender,
-      profileImage,
-    } = parsed.data;
+    const { id, name, email, password, qualification, phone, dob, gender } =
+      parsed.data;
 
     const existingHelper = await DbClient.doctorHelper.findUnique({
       where: { id },
     });
-
     if (!existingHelper) {
       return reply.status(404).send({ error: "Helper not found" });
     }
 
-    const updateData: any = {};
+    if (user.role === "doctorhelper" && user.id !== id) {
+      return reply.status(403).send({ error: "Forbidden" });
+    }
 
+    const updateData: any = {};
     if (name) {
       updateData.name = name;
       updateData.slug = name.toLowerCase().replace(/\s+/g, "-");
     }
-
     if (email) {
+      const normalizedEmail = email.toLowerCase();
       const emailOwner = await DbClient.doctorHelper.findUnique({
-        where: { email: email.toLowerCase() },
+        where: { email: normalizedEmail },
       });
       if (emailOwner && emailOwner.id !== id) {
         return reply.status(400).send({ error: "Email already in use" });
       }
-      updateData.email = email.toLowerCase();
+      updateData.email = normalizedEmail;
     }
-
     if (password) {
       updateData.password = await hashPassword(password);
     }
-
     if (qualification !== undefined)
-      updateData.qualification = qualification || null;
-    if (phone !== undefined) updateData.phone = phone || null;
-    if (dob !== undefined) updateData.dob = dob || null;
-    if (gender !== undefined) updateData.gender = gender || null;
+      updateData.qualification = qualification !== "" ? qualification : null;
+    if (phone !== undefined) updateData.phone = phone !== "" ? phone : null;
+    if (dob !== undefined) updateData.dob = dob !== "" ? dob : null;
+    if (gender !== undefined) updateData.gender = gender !== "" ? gender : null;
 
-    if (profileImage) {
-      const imageBuffer = Buffer.from(profileImage.data);
-      const arrayBuffer = imageBuffer.buffer.slice(
-        imageBuffer.byteOffset,
-        imageBuffer.byteOffset + imageBuffer.byteLength,
-      );
-      const { url } = (await uploadImage(
-        arrayBuffer,
+    let file = body.profileImage;
+    if (file && typeof file.toBuffer === "function") {
+      const imageBuffer = await file.toBuffer();
+      if (imageBuffer.length > 0) {
+        const { url } = await uploadImage(
+          imageBuffer,
+          updateData.slug || existingHelper.slug,
+          "doctorhelper"
+        );
+        updateData.profileImage = url;
+      }
+    } else if (file && file.data && Array.isArray(file.data)) {
+      const imageBuffer = Buffer.from(file.data);
+      const { url } = await uploadImage(
+        imageBuffer,
         updateData.slug || existingHelper.slug,
-        "doctorhelper",
-      )) as { url: string };
+        "doctorhelper"
+      );
       updateData.profileImage = url;
     }
 

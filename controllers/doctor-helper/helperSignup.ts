@@ -8,17 +8,10 @@ const helperSignupSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
-  qualification: z.string().optional(),
-  phone: z.string().optional(),
-  dob: z.string().optional(),
-  gender: z.string().optional(),
-  profileImage: z
-    .object({
-      data: z.array(z.number()),
-      name: z.string(),
-      type: z.string(),
-    })
-    .optional(),
+  phone: z.string(),
+  qualification: z.string(),
+  dob: z.string(),
+  gender: z.string(),
 });
 
 const helperSignup = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -29,26 +22,28 @@ const helperSignup = async (request: FastifyRequest, reply: FastifyReply) => {
   }
 
   try {
-    const parsed = helperSignupSchema.safeParse(request.body);
+    const body = request.body as any;
+    const extractValue = (field: any) =>
+      field && typeof field === "object" && "value" in field
+        ? field.value
+        : field;
+    const fields = {
+      name: extractValue(body.name),
+      email: extractValue(body.email),
+      password: extractValue(body.password),
+      phone: extractValue(body.phone),
+      qualification: extractValue(body.qualification),
+      dob: extractValue(body.dob),
+      gender: extractValue(body.gender),
+    };
+    const parsed = helperSignupSchema.safeParse(fields);
 
     if (!parsed.success) {
       return reply.status(400).send({ error: parsed.error.issues });
     }
 
-    const {
-      name,
-      email,
-      password,
-      qualification,
-      phone,
-      dob,
-      gender,
-      profileImage,
-    } = parsed.data;
-
-    if (!profileImage) {
-      return reply.status(400).send({ error: "Profile image is required" });
-    }
+    const { name, email, password, qualification, phone, dob, gender } =
+      parsed.data;
 
     const normalizedEmail = email.toLowerCase();
 
@@ -62,15 +57,18 @@ const helperSignup = async (request: FastifyRequest, reply: FastifyReply) => {
 
     const slug = name.toLowerCase().replace(/\s+/g, "-");
 
-    const imageBuffer = Buffer.from(profileImage.data);
-    const arrayBuffer = imageBuffer.buffer.slice(
-      imageBuffer.byteOffset,
-      imageBuffer.byteOffset + imageBuffer.byteLength,
-    );
+    const file = body.profileImage;
+    if (!file || typeof file.toBuffer !== "function") {
+      return reply.status(400).send({ error: "Profile image is required" });
+    }
 
-    const { url } = (await uploadImage(arrayBuffer, slug, "doctorhelper")) as {
-      url: string;
-    };
+    const imageBuffer = await file.toBuffer();
+    if (imageBuffer.length === 0) {
+      return reply
+        .status(400)
+        .send({ error: "Uploaded profile image is empty" });
+    }
+    const { url } = await uploadImage(imageBuffer, slug, "doctor-helper");
 
     const hashedPassword = await hashPassword(password);
 
@@ -80,11 +78,11 @@ const helperSignup = async (request: FastifyRequest, reply: FastifyReply) => {
         name,
         email: normalizedEmail,
         password: hashedPassword,
-        qualification: qualification || null,
+        qualification: qualification,
         profileImage: url,
-        phone: phone || null,
-        dob: dob || null,
-        gender: gender || null,
+        phone: phone,
+        dob: dob,
+        gender: gender,
         doctorId: user.id,
       },
     });

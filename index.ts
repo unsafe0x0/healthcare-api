@@ -13,7 +13,6 @@ import doctorHelperRoutes from "./routes/doctorHelperRoutes";
 import additionalPatientRoutes from "./routes/additionaPatientRoutes";
 import appointmentRoutes from "./routes/appointmentRoutes";
 import { logRequest } from "./services/AuditLogs";
-import { sendEmail } from "./services/SendMail";
 
 const app = fastify({ logger: false });
 

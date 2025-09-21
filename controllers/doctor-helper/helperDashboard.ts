@@ -3,7 +3,7 @@ import DbClient from "../../prisma/DbClient";
 
 const helperDashboard = async (
   request: FastifyRequest,
-  reply: FastifyReply,
+  reply: FastifyReply
 ) => {
   const user = (request as any).user;
 
@@ -18,6 +18,10 @@ const helperDashboard = async (
         name: true,
         email: true,
         profileImage: true,
+        qualification: true,
+        phone: true,
+        dob: true,
+        gender: true,
         doctor: {
           select: {
             id: true,
@@ -27,9 +31,11 @@ const helperDashboard = async (
             qualification: true,
             profileImage: true,
             totalAppointments: true,
+            schedules: true,
             appointments: {
               select: {
                 id: true,
+                appointmentId: true,
                 date: true,
                 time: true,
                 subject: true,
@@ -49,6 +55,9 @@ const helperDashboard = async (
                 name: true,
                 phone: true,
                 subject: true,
+                consultationFee: true,
+                date: true,
+                time: true,
                 createdAt: true,
               },
             },

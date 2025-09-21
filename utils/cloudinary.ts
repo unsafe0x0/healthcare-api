@@ -7,13 +7,11 @@ cloudinary.v2.config({
 });
 
 export const uploadImage = async (
-  arrayBuffer: ArrayBuffer,
+  buffer: Buffer,
   imageName: string,
   folder: string,
-) => {
+): Promise<{ url: string; public_id: string }> => {
   try {
-    const buffer = Buffer.from(arrayBuffer);
-
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.v2.uploader.upload_stream(
         {
@@ -31,8 +29,8 @@ export const uploadImage = async (
             reject(new Error("Image upload failed"));
           } else {
             resolve({
-              url: result?.secure_url,
-              public_id: result?.public_id,
+              url: result!.secure_url,
+              public_id: result!.public_id,
             });
           }
         },
