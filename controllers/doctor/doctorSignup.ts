@@ -41,12 +41,8 @@ const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
       address: extractValue(body.address),
       dob: extractValue(body.dob),
       gender: extractValue(body.gender),
-      consultationFee: body.consultationFee
-        ? parseInt(extractValue(body.consultationFee))
-        : undefined,
-      yearsOfExperience: body.yearsOfExperience
-        ? parseInt(extractValue(body.yearsOfExperience))
-        : undefined,
+      consultationFee: body.consultationFee,
+      yearsOfExperience: body.yearsOfExperience,
     };
     const parsed = doctorSignupSchema.safeParse(fields);
 

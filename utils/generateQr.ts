@@ -3,7 +3,7 @@ import { uploadImage } from "./cloudinary";
 
 export async function generateQr(appointmentId: string): Promise<string> {
   const clientUrl = process.env.CORS_ORIGIN;
-  const data = `${clientUrl}/appointments/${appointmentId}`;
+  const data = `${clientUrl}/appointment/${appointmentId}`;
   try {
     const qrBuffer = await QRCode.toBuffer(data, {
       margin: 0,

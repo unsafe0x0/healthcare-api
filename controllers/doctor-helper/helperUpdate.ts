@@ -35,8 +35,8 @@ const helperUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
       password: extractValue(body.password),
       qualification: extractValue(body.qualification),
       phone: extractValue(body.phone),
-      dob: body.dob !== undefined ? extractValue(body.dob) : undefined,
-      gender: body.gender !== undefined ? extractValue(body.gender) : undefined,
+      dob: extractValue(body.dob),
+      gender: extractValue(body.gender),
     };
 
     const parsed = helperUpdateSchema.safeParse(fields);
