@@ -41,10 +41,10 @@ model Doctor {
   profileImage      String
   phone             String
   address           String
-  dob               String?
-  gender            String?
-  consultationFee   Int?
-  yearsOfExperience Int?
+  dob               String
+  gender            String
+  consultationFee   Int
+  yearsOfExperience Int
   totalAppointments Int?     @default(0)
   role              String   @default("doctor")
   createdAt         DateTime @default(now())

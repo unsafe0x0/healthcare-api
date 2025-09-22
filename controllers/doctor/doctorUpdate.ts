@@ -40,14 +40,15 @@ const doctorUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
       qualification: extractValue(body.qualification),
       phone: extractValue(body.phone),
       address: extractValue(body.address),
-      dob: body.dob !== undefined ? extractValue(body.dob) : undefined,
-      gender: body.gender !== undefined ? extractValue(body.gender) : undefined,
-      consultationFee: body.consultationFee,
-      yearsOfExperience: body.yearsOfExperience,
+      dob: extractValue(body.dob),
+      gender: extractValue(body.gender),
+      consultationFee: extractValue(body.consultationFee) ? parseInt(extractValue(body.consultationFee), 10) : null,
+      yearsOfExperience: extractValue(body.yearsOfExperience) ? parseInt(extractValue(body.yearsOfExperience), 10) : null,
     };
 
     const parsed = doctorUpdateSchema.safeParse(fields);
     if (!parsed.success) {
+      console.log(parsed.error);
       return reply.status(400).send({ error: parsed.error.issues });
     }
 
