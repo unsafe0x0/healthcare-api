@@ -42,8 +42,12 @@ const doctorUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
       address: extractValue(body.address),
       dob: extractValue(body.dob),
       gender: extractValue(body.gender),
-      consultationFee: extractValue(body.consultationFee) ? parseInt(extractValue(body.consultationFee), 10) : null,
-      yearsOfExperience: extractValue(body.yearsOfExperience) ? parseInt(extractValue(body.yearsOfExperience), 10) : null,
+      consultationFee: extractValue(body.consultationFee)
+        ? parseInt(extractValue(body.consultationFee), 10)
+        : null,
+      yearsOfExperience: extractValue(body.yearsOfExperience)
+        ? parseInt(extractValue(body.yearsOfExperience), 10)
+        : null,
     };
 
     const parsed = doctorUpdateSchema.safeParse(fields);
@@ -107,16 +111,13 @@ const doctorUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
       updateData.yearsOfExperience = yearsOfExperience;
 
     const file = body.profileImage;
-    if (file && typeof file.toBuffer === "function") {
-      const imageBuffer = await file.toBuffer();
-      if (imageBuffer.length > 0) {
-        const { url } = await uploadImage(
-          imageBuffer,
-          updateData.slug || existingDoctor.slug,
-          "doctor"
-        );
-        updateData.profileImage = url;
-      }
+    if (file) {
+      const { url } = await uploadImage(
+        file,
+        updateData.slug || existingDoctor.slug,
+        "doctor",
+      );
+      updateData.profileImage = url;
     }
 
     await DbClient.doctor.update({

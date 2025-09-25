@@ -1,4 +1,5 @@
 import DbClient from "../prisma/DbClient";
+import type { FastifyRequest } from "fastify";
 
 interface AuditLogData {
   method: string;
@@ -9,7 +10,15 @@ interface AuditLogData {
   ip?: string;
 }
 
-export async function logRequest(data: AuditLogData) {
+export async function logRequest(
+  req: FastifyRequest,
+  data: Omit<AuditLogData, "ip">,
+) {
+  const ip =
+    (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+    req.ip ||
+    req.socket.remoteAddress;
+
   try {
     await DbClient.auditLog.create({
       data: {
@@ -18,7 +27,7 @@ export async function logRequest(data: AuditLogData) {
         action: data.action,
         userId: data.userId ?? null,
         role: data.role ?? null,
-        ip: data.ip ?? null,
+        ip,
       },
     });
   } catch (err) {

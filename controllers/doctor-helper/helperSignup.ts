@@ -58,17 +58,11 @@ const helperSignup = async (request: FastifyRequest, reply: FastifyReply) => {
     const slug = name.toLowerCase().replace(/\s+/g, "-");
 
     const file = body.profileImage;
-    if (!file || typeof file.toBuffer !== "function") {
+    if (!file) {
       return reply.status(400).send({ error: "Profile image is required" });
     }
 
-    const imageBuffer = await file.toBuffer();
-    if (imageBuffer.length === 0) {
-      return reply
-        .status(400)
-        .send({ error: "Uploaded profile image is empty" });
-    }
-    const { url } = await uploadImage(imageBuffer, slug, "doctor-helper");
+    const { url } = await uploadImage(file, slug, "doctor-helper");
 
     const hashedPassword = await hashPassword(password);
 

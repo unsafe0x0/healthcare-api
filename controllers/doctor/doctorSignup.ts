@@ -41,8 +41,12 @@ const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
       address: extractValue(body.address),
       dob: extractValue(body.dob),
       gender: extractValue(body.gender),
-      consultationFee: extractValue(body.consultationFee) ? parseInt(extractValue(body.consultationFee), 10) : null,
-      yearsOfExperience: extractValue(body.yearsOfExperience) ? parseInt(extractValue(body.yearsOfExperience), 10) : null,
+      consultationFee: extractValue(body.consultationFee)
+        ? parseInt(extractValue(body.consultationFee), 10)
+        : null,
+      yearsOfExperience: extractValue(body.yearsOfExperience)
+        ? parseInt(extractValue(body.yearsOfExperience), 10)
+        : null,
     };
     const parsed = doctorSignupSchema.safeParse(fields);
 
@@ -77,16 +81,10 @@ const doctorSignup = async (request: FastifyRequest, reply: FastifyReply) => {
     const slug = name.toLowerCase().replace(/\s+/g, "-");
 
     const file = body.profileImage;
-    if (!file || typeof file.toBuffer !== "function") {
+    if (!file) {
       return reply.status(400).send({ error: "Profile image is required" });
     }
-    const imageBuffer = await file.toBuffer();
-    if (imageBuffer.length === 0) {
-      return reply
-        .status(400)
-        .send({ error: "Uploaded profile image is empty" });
-    }
-    const { url } = await uploadImage(imageBuffer, slug, "doctor");
+    const { url } = await uploadImage(file, slug, "doctor");
 
     const hashedPassword = await hashPassword(password);
 

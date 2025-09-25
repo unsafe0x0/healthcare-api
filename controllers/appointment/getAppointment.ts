@@ -9,7 +9,7 @@ interface AppointmentRequest {
 
 const getAppointment = async (
   request: FastifyRequest<AppointmentRequest>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const user = (request as any).user;
 

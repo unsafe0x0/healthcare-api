@@ -7,11 +7,12 @@ cloudinary.v2.config({
 });
 
 export const uploadImage = async (
-  buffer: Buffer,
+  file: any,
   imageName: string,
   folder: string,
 ): Promise<{ url: string; public_id: string }> => {
   try {
+    const imageBuffer = await file.toBuffer();
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.v2.uploader.upload_stream(
         {
@@ -22,6 +23,9 @@ export const uploadImage = async (
           overwrite: true,
           quality: "auto",
           format: "avif",
+          height: 500,
+          width: 500,
+          crop: "limit",
         },
         (error, result) => {
           if (error) {
@@ -35,7 +39,7 @@ export const uploadImage = async (
           }
         },
       );
-      uploadStream.end(buffer);
+      uploadStream.end(imageBuffer);
     });
   } catch (error) {
     console.error("Error uploading image to Cloudinary:", error);

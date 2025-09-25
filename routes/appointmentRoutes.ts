@@ -17,7 +17,7 @@ export default async function appointmentRoutes(app: FastifyInstance) {
     {
       preHandler: authMiddleware(["doctor", "doctorhelper"]),
       handler: acceptAppointment,
-    }
+    },
   );
 
   app.patch<{ Params: { appointmentId: string } }>(
@@ -25,7 +25,7 @@ export default async function appointmentRoutes(app: FastifyInstance) {
     {
       preHandler: authMiddleware(["patient", "doctor", "doctorhelper"]),
       handler: cancelAppointment,
-    }
+    },
   );
 
   app.patch<{ Params: { appointmentId: string } }>(
@@ -33,7 +33,7 @@ export default async function appointmentRoutes(app: FastifyInstance) {
     {
       preHandler: authMiddleware(["doctor", "doctorhelper"]),
       handler: completeAppointment,
-    }
+    },
   );
   app.get<{ Params: { appointmentId: string } }>(
     "/appointment/:appointmentId",
@@ -45,6 +45,6 @@ export default async function appointmentRoutes(app: FastifyInstance) {
         "admin",
       ]),
       handler: getAppointment,
-    }
+    },
   );
 }

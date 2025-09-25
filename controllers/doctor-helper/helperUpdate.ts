@@ -83,22 +83,11 @@ const helperUpdate = async (request: FastifyRequest, reply: FastifyReply) => {
     if (gender !== undefined) updateData.gender = gender !== "" ? gender : null;
 
     let file = body.profileImage;
-    if (file && typeof file.toBuffer === "function") {
-      const imageBuffer = await file.toBuffer();
-      if (imageBuffer.length > 0) {
-        const { url } = await uploadImage(
-          imageBuffer,
-          updateData.slug || existingHelper.slug,
-          "doctorhelper"
-        );
-        updateData.profileImage = url;
-      }
-    } else if (file && file.data && Array.isArray(file.data)) {
-      const imageBuffer = Buffer.from(file.data);
+    if (file) {
       const { url } = await uploadImage(
-        imageBuffer,
+        file,
         updateData.slug || existingHelper.slug,
-        "doctorhelper"
+        "doctorhelper",
       );
       updateData.profileImage = url;
     }
