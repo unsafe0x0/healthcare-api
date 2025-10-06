@@ -17,7 +17,7 @@ import { logRequest } from "./services/AuditLogs";
 const app = fastify({ logger: false });
 
 await app.register(fastifyCors, {
-  origin: process.env.CORS_ORIGIN || "*",
+  origin: process.env.CORS_ORIGIN,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -41,7 +41,7 @@ app.addHook("onRequest", (request, reply, done) => {
   done();
 });
 
-app.addHook("onResponse", (request, reply, done) => {
+app.addHook("onResponse", async (request, reply) => {
   const method = request.method;
   const url = request.url;
   const status = reply.statusCode;
@@ -49,7 +49,18 @@ app.addHook("onResponse", (request, reply, done) => {
   const diff = process.hrtime(startTime);
   const timeMs = (diff[0] * 1e3 + diff[1] / 1e6).toFixed(2);
   console.log(`${method} ${url} ${status} ${timeMs}ms`);
-  done();
+
+  if (request.url === "/favicon.ico" || request.url === "/") {
+    return;
+  }
+
+  await logRequest(request, {
+    method: request.method,
+    url: request.url,
+    action: `${request.method} ${request.url}`,
+    userId: request.user?.id,
+    role: request.user?.role,
+  });
 });
 
 app.get("/", async (request, reply) => {
@@ -68,21 +79,6 @@ await patientRoutes(app);
 await doctorHelperRoutes(app);
 await additionalPatientRoutes(app);
 await appointmentRoutes(app);
-
-app.addHook("onResponse", async (request, reply) => {
-  if (request.url === "/favicon.ico" || request.url === "/") {
-    return;
-  }
-
-  await logRequest({
-    method: request.method,
-    url: request.url,
-    action: `${request.method} ${request.url}`,
-    userId: request.user?.id,
-    role: request.user?.role,
-    ip: request.ip,
-  });
-});
 
 const start = async () => {
   try {
