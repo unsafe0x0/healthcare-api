@@ -13,17 +13,21 @@ export async function sendEmail({ to, subject, body }: EmailOptions) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ to, subject, body }),
+      body: JSON.stringify({ to, subject, html: body }),
     });
 
-    const result = (await response.json()) as {
-      success: boolean;
-      message: string;
-    };
+    let result: any;
 
-    if (!response.ok || !result.success) {
+    try {
+      result = await response.json();
+    } catch {
+      result = { success: response.ok, message: await response.text() };
+    }
+
+    if (!response.ok || result?.success === false) {
       const errorMsg = result?.message || "Failed to send email";
       console.error("Email API error:", errorMsg);
+      throw new Error(errorMsg);
     }
 
     return result;
