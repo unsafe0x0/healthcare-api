@@ -16,12 +16,13 @@ export async function sendEmail({ to, subject, body }: EmailOptions) {
       body: JSON.stringify({ to, subject, html: body }),
     });
 
+    const text = await response.text();
     let result: any;
 
     try {
-      result = await response.json();
+      result = JSON.parse(text);
     } catch {
-      result = { success: response.ok, message: await response.text() };
+      result = { success: response.ok, message: text };
     }
 
     if (!response.ok || result?.success === false) {
